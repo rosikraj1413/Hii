@@ -1,0 +1,390 @@
+import React, { useState } from "react";
+import { Alert, Button, CardActions, CardContent, Divider, TextField } from "@mui/material";
+import RefreshIcon from "@mui/icons-material/Refresh";
+
+const Captcha = ({ onSuccess }) => {
+  const randomString = Math.random().toString(36).slice(8);
+  const [captcha, setCaptcha] = useState(randomString);
+  const [text, setText] = useState("");
+  const [valid, setValid] = useState(false);
+  const [success, setSuccess] = useState(false);
+
+  const refreshString = () => {
+    setText("");
+    setCaptcha(Math.random().toString(36).slice(8));
+  };
+
+  const matchCaptcha = (event) => {
+    event.preventDefault();
+    if (text === captcha) {
+      setValid(false);
+      setSuccess(true);
+      onSuccess();
+    } else {
+      setValid(true);
+      setSuccess(false);
+    }
+  };
+
+  return (
+    <>
+      {success && <Alert variant="outlined" sx={{ marginBottom: "50px" }}>Successful</Alert>}
+      <div className="card">
+        <Divider />
+        <CardContent>
+          <CardActions>
+            <div className="h3">{captcha}</div>
+            <Button startIcon={<RefreshIcon />} onClick={refreshString}></Button>
+          </CardActions>
+          <form onSubmit={matchCaptcha}>
+            <TextField
+              label="Enter Captcha"
+              focused
+              value={text}
+              fullWidth
+              onChange={(e) => setText(e.target.value)}
+              error={valid}
+              helperText={valid && "Invalid Captcha"}
+            />
+          </form>
+        </CardContent>
+      </div>
+    </>
+  );
+};
+
+export default Captcha;
+////
+
+import React, { useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import Captcha from "./Captcha";
+
+const UserLogin = () => {
+  const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isCaptchaSuccess, setIsCaptchaSuccess] = useState(false);
+
+  const handleUserLogin = async (event) => {
+    event.preventDefault();
+
+    if (isCaptchaSuccess) {
+      try {
+        // Replace 'http://your-backend-api/login' with your actual backend API endpoint
+        const response = await axios.post("http://your-backend-api/login", {
+          email: email,
+          password: password,
+        });
+
+        if (response.data.message === "Login Success") {
+          navigate("/Home"); // Navigate to Home on successful login
+        } else if (response.data.message === "username not exist") {
+          alert("Username does not exist");
+        } else {
+          alert("Incorrect username or password");
+        }
+      } catch (error) {
+        console.error(error);
+        alert("An error occurred during user login");
+      }
+    } else {
+      alert("Please solve the Captcha before attempting login.");
+    }
+  };
+
+  return (
+    // ... (the rest of your component remains unchanged)
+  );
+};
+
+export default UserLogin;
+////
+
+import React, { useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import Captcha from "./Captcha";
+
+const UserLogin = () => {
+  const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isCaptchaSuccess, setIsCaptchaSuccess] = useState(false);
+
+  const handleUserLogin = async (event) => {
+    event.preventDefault();
+
+    if (isCaptchaSuccess) {
+      try {
+        // Your user login logic with axios.post
+        // ...
+
+        navigate("/Home"); // Example navigation on successful login
+      } catch (err) {
+        console.error(err);
+        alert("An error occurred during user login");
+      }
+    } else {
+      alert("Please solve the Captcha before attempting login.");
+    }
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8">
+        <div>
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">User Login</h2>
+        </div>
+        <form className="mt-8 space-y-6" onSubmit={handleUserLogin}>
+          <div className="rounded-md shadow-sm -space-y-px">
+            <div>
+              <label htmlFor="email" className="sr-only">
+                Email address
+              </label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                autoComplete="email"
+                required
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                placeholder="Email address"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
+            <div>
+              <label htmlFor="password" className="sr-only">
+                Password
+              </label>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                autoComplete="current-password"
+                required
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
+          </div>
+
+          <Captcha onSuccess={() => setIsCaptchaSuccess(true)} />
+
+          <div>
+            <button
+              type="submit"
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-500 hover:bg-blue-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+              Login
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+export default UserLogin;
+////
+import React, { useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import Captcha from "./Captcha";
+
+const VendorLogin = () => {
+  const navigate = useNavigate();
+  const [vendorname, setVendorname] = useState("");
+  const [vendorpassword, setVendorPassword] = useState("");
+  const [isCaptchaSuccess, setIsCaptchaSuccess] = useState(false);
+
+  const handleVendorLogin = async (event) => {
+    event.preventDefault();
+
+    if (isCaptchaSuccess) {
+      try {
+        // Replace 'http://your-backend-api/vendor/login' with your actual backend API endpoint for vendor login
+        const response = await axios.post("http://your-backend-api/vendor/login", {
+          vendorname: vendorname,
+          vendorpassword: vendorpassword,
+        });
+
+        if (response.data.message === "Login Success") {
+          navigate("/VendorHome"); // Navigate to VendorHome on successful login
+        } else if (response.data.message === "vendor not exist") {
+          alert("Vendor does not exist");
+        } else {
+          alert("Incorrect vendor or password");
+        }
+      } catch (error) {
+        console.error(error);
+        alert("An error occurred during vendor login");
+      }
+    } else {
+      alert("Please solve the Captcha before attempting login.");
+    }
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8">
+        <div>
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">Vendor Login</h2>
+        </div>
+        <form className="mt-8 space-y-6" onSubmit={handleVendorLogin}>
+          <div className="rounded-md shadow-sm -space-y-px">
+            <div>
+              <label htmlFor="vendorname" className="sr-only">
+                Vendor Name
+              </label>
+              <input
+                id="vendorname"
+                name="vendorname"
+                type="text"
+                autoComplete="vendorname"
+                required
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                placeholder="Vendor Name"
+                value={vendorname}
+                onChange={(e) => setVendorname(e.target.value)}
+              />
+            </div>
+            <div>
+              <label htmlFor="vendorpassword" className="sr-only">
+                Password
+              </label>
+              <input
+                id="vendorpassword"
+                name="vendorpassword"
+                type="password"
+                autoComplete="current-password"
+                required
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                placeholder="Password"
+                value={vendorpassword}
+                onChange={(e) => setVendorPassword(e.target.value)}
+              />
+            </div>
+          </div>
+
+          <Captcha onSuccess={() => setIsCaptchaSuccess(true)} />
+
+          <div>
+            <button
+              type="submit"
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-500 hover:bg-blue-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+              Login
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+export default VendorLogin;
+////
+import React, { useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import Captcha from "./Captcha";
+
+const AdminLogin = () => {
+  const navigate = useNavigate();
+  const [adminname, setAdminname] = useState("");
+  const [adminpassword, setAdminPassword] = useState("");
+  const [isCaptchaSuccess, setIsCaptchaSuccess] = useState(false);
+
+  const handleAdminLogin = async (event) => {
+    event.preventDefault();
+
+    if (isCaptchaSuccess) {
+      try {
+        // Replace 'http://your-backend-api/admin/login' with your actual backend API endpoint for admin login
+        const response = await axios.post("http://your-backend-api/admin/login", {
+          adminname: adminname,
+          adminpassword: adminpassword,
+        });
+
+        if (response.data.message === "Login Success") {
+          navigate("/AdminHome"); // Navigate to AdminHome on successful login
+        } else if (response.data.message === "admin not exist") {
+          alert("Admin does not exist");
+        } else {
+          alert("Incorrect admin or password");
+        }
+      } catch (error) {
+        console.error(error);
+        alert("An error occurred during admin login");
+      }
+    } else {
+      alert("Please solve the Captcha before attempting login.");
+    }
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8">
+        <div>
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">Admin Login</h2>
+        </div>
+        <form className="mt-8 space-y-6" onSubmit={handleAdminLogin}>
+          <div className="rounded-md shadow-sm -space-y-px">
+            <div>
+              <label htmlFor="adminname" className="sr-only">
+                Admin Name
+              </label>
+              <input
+                id="adminname"
+                name="adminname"
+                type="text"
+                autoComplete="adminname"
+                required
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                placeholder="Admin Name"
+                value={adminname}
+                onChange={(e) => setAdminname(e.target.value)}
+              />
+            </div>
+            <div>
+              <label htmlFor="adminpassword" className="sr-only">
+                Password
+              </label>
+              <input
+                id="adminpassword"
+                name="adminpassword"
+                type="password"
+                autoComplete="current-password"
+                required
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                placeholder="Password"
+                value={adminpassword}
+                onChange={(e) => setAdminPassword(e.target.value)}
+              />
+            </div>
+          </div>
+
+          <Captcha onSuccess={() => setIsCaptchaSuccess(true)} />
+
+          <div>
+            <button
+              type="submit"
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-500 hover:bg-blue-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+              Login
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+export default AdminLogin;
+
+
