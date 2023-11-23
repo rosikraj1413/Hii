@@ -1,0 +1,62 @@
+import React, { useState, forwardRef, useImperativeHandle } from "react";
+import { Alert, Button, CardActions, CardContent, Divider, TextField } from "@mui/material";
+import RefreshIcon from "@mui/icons-material/Refresh";
+
+const Captcha = forwardRef(({ onSuccess }, ref) => {
+  const randomString = () => Math.random().toString(36).slice(8);
+  const [captcha, setCaptcha] = useState(randomString());
+  const [text, setText] = useState("");
+  const [valid, setValid] = useState(false);
+  const [success, setSuccess] = useState(false);
+
+  // Expose isSuccess method through the ref
+  useImperativeHandle(ref, () => ({
+    isSuccess: () => success,
+  }));
+
+  const refreshString = () => {
+    setText("");
+    setCaptcha(randomString());
+    setSuccess(false); // Reset success status on refresh
+  };
+
+  const matchCaptcha = (event) => {
+    event.preventDefault();
+    if (text === captcha) {
+      setValid(false);
+      setSuccess(true);
+      onSuccess();
+    } else {
+      setValid(true);
+      setSuccess(false);
+    }
+  };
+
+  return (
+    <>
+      {success && <Alert variant="outlined" sx={{ marginBottom: "50px" }}>Captcha Successfully Validated</Alert>}
+      <div className="card">
+        <Divider />
+        <CardContent>
+          <CardActions>
+            <div className="h3">{captcha}</div>
+            <Button aria-label="Refresh Captcha" startIcon={<RefreshIcon />} onClick={refreshString}></Button>
+          </CardActions>
+          <form onSubmit={matchCaptcha}>
+            <TextField
+              label="Enter Captcha"
+              focused
+              value={text}
+              fullWidth
+              onChange={(e) => setText(e.target.value)}
+              error={valid}
+              helperText={valid && "Invalid Captcha"}
+            />
+          </form>
+        </CardContent>
+      </div>
+    </>
+  );
+});
+
+export default Captcha;
