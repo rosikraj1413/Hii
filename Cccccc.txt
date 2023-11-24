@@ -36,12 +36,73 @@ function AddProduct() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="w-full max-w-md p-4 bg-white shadow-md">
-        <Navbaradmin />
-        <h1 className="text-2xl font-bold mb-4">Add Product</h1>
-        <form onSubmit={handleSubmit}>
-          {/* ... Your form input fields ... */}
+        <h1 className="text-2xl font-bold mb-4 text-center">Add Product</h1>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <label className="block">
+            Product ID
+            <input
+              type="text"
+              name="productid"
+              onChange={handleChange}
+              className="w-full border p-2 rounded-md"
+            />
+          </label>
+          <label className="block">
+            Product Name
+            <input
+              type="text"
+              name="pname"
+              onChange={handleChange}
+              className="w-full border p-2 rounded-md"
+            />
+          </label>
+          <label className="block">
+            Manufacture Date
+            <input
+              type="date"
+              name="manufacturedate"
+              onChange={handleChange}
+              className="w-full border p-2 rounded-md"
+            />
+          </label>
+          <label className="block">
+            Expiry Date
+            <input
+              type="date"
+              name="expirydate"
+              onChange={handleChange}
+              className="w-full border p-2 rounded-md"
+            />
+          </label>
+          <label className="block">
+            Price
+            <input
+              type="text"
+              name="price"
+              onChange={handleChange}
+              className="w-full border p-2 rounded-md"
+            />
+          </label>
+          <label className="block">
+            Quantity
+            <input
+              type="text"
+              name="quantity"
+              onChange={handleChange}
+              className="w-full border p-2 rounded-md"
+            />
+          </label>
+          <label className="block">
+            Stock
+            <input
+              type="text"
+              name="stock"
+              onChange={handleChange}
+              className="w-full border p-2 rounded-md"
+            />
+          </label>
           <button
             type="button"
             onClick={handleSubmit}
