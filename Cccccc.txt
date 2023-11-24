@@ -1,98 +1,58 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React, { useState } from 'react';
+import axios from 'axios';
+import Navbaradmin from "./Navbaradmin";
 
-const ProductList = () => {
-  const [products, setProducts] = useState([]);
-  const [newProduct, setNewProduct] = useState({
-    productid: 0,
-    pname: "",
-    manufacturedate: "",
-    expirydate: "",
-    price: 0,
-    quantity: 0,
-    stock: 0,
+function AddProduct() {
+  const [formData, setFormData] = useState({
+    productid: '',
+    pname: '',
+    manufacturedate: '',
+    expirydate: '',
+    price: '',
+    quantity: '',
+    stock: ''
   });
 
-  const fetchProducts = async () => {
-    try {
-      const response = await axios.post("http://localhost:8080/display");
-      setProducts(response.data);
-    } catch (error) {
-      console.error("Error fetching products:", error);
-    }
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
   };
 
-  useEffect(() => {
-    fetchProducts();
-  }, []);
-
-  const handleDelete = async (productId) => {
+  const handleSubmit = async () => {
     try {
-      await axios.post("http://localhost:8080/delete", { productid: productId });
-      // Refresh the product list after deletion
-      fetchProducts();
-    } catch (error) {
-      console.error("Error deleting product:", error);
-    }
-  };
+      const response = await axios.post('http://localhost:8080/save', formData);
 
-  const handleUpdate = async () => {
-    try {
-      await axios.post("http://localhost:8080/update", newProduct);
-      // Refresh the product list after update
-      fetchProducts();
-      // Clear the newProduct state
-      setNewProduct({
-        productid: 0,
-        pname: "",
-        manufacturedate: "",
-        expirydate: "",
-        price: 0,
-        quantity: 0,
-        stock: 0,
-      });
+      if (response.status === 200) {
+        console.log('Product added successfully');
+      } else {
+        console.error('Failed to add product');
+      }
     } catch (error) {
-      console.error("Error updating product:", error);
+      console.error('Error during product addition:', error);
     }
   };
 
   return (
-    <div>
-      <h1>Product List</h1>
-      <ul>
-        {products.map((product) => (
-          <li key={product.productid}>
-            <strong>{product.pname}</strong> - ${product.price}
-            <button onClick={() => handleDelete(product.productid)}>Delete</button>
-          </li>
-        ))}
-      </ul>
-
-      <h2>Update Product</h2>
-      <form>
-        <label>
-          Product ID:
-          <input
-            type="number"
-            value={newProduct.productid}
-            onChange={(e) => setNewProduct({ ...newProduct, productid: e.target.value })}
-          />
-        </label>
-        <label>
-          Product Name:
-          <input
-            type="text"
-            value={newProduct.pname}
-            onChange={(e) => setNewProduct({ ...newProduct, pname: e.target.value })}
-          />
-        </label>
-        {/* Add similar input fields for other properties like manufacturedate, expirydate, etc. */}
-        <button type="button" onClick={handleUpdate}>
-          Update Product
-        </button>
-      </form>
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="w-full max-w-md p-4 bg-white shadow-md">
+        <Navbaradmin />
+        <h1 className="text-2xl font-bold mb-4">Add Product</h1>
+        <form onSubmit={handleSubmit}>
+          {/* ... Your form input fields ... */}
+          <button
+            type="button"
+            onClick={handleSubmit}
+            className="w-full bg-blue-500 text-white p-2 rounded-md hover:bg-blue-400 focus:outline-none focus:ring focus:border-blue-300"
+          >
+            Submit
+          </button>
+        </form>
+      </div>
     </div>
   );
-};
+}
 
-export default ProductList;
+export default AddProduct;
