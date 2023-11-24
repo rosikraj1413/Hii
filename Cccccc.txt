@@ -13,16 +13,16 @@ const ProductList = () => {
     stock: 0,
   });
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await axios.post("http://localhost:8080/display");
-        setProducts(response.data);
-      } catch (error) {
-        console.error("Error fetching products:", error);
-      }
-    };
+  const fetchProducts = async () => {
+    try {
+      const response = await axios.post("http://localhost:8080/display");
+      setProducts(response.data);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    }
+  };
 
+  useEffect(() => {
     fetchProducts();
   }, []);
 
