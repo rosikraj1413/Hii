@@ -1,91 +1,34 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Link, useParams } from "react-router-dom";
-import Navbaradmin from "./Navbaradmin";
 
-function Product() {
+const ProductList = () => {
   const [products, setProducts] = useState([]);
 
   useEffect(() => {
-    loadProducts();
+    const fetchProducts = async () => {
+      try {
+        const response = await axios.get("http://localhost:8080/display");
+        setProducts(response.data);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
+    };
+
+    fetchProducts();
   }, []);
 
-  const loadProducts = async () => {
-    try {
-      const response = await axios.get("http://localhost:8080/display");
-      setProducts(response.data);
-    } catch (error) {
-      console.error("Error loading products:", error);
-    }
-  };
-
-  const deleteProduct = async (productId) => {
-    try {
-      await axios.delete(`http://localhost:8080/delete/${productId}`);
-      loadProducts();
-    } catch (error) {
-      console.error("Error deleting product:", error);
-    }
-  };
-
   return (
-    <center>
-      <div>
-        <Navbaradmin />
-        <div className="container">
-          <div className="py-6">
-            <table className="table border shadow">
-              <thead>
-                <tr>
-                  <th scope="col">Product Id</th>
-                  <th scope="col">Product Name</th>
-                  <th scope="col">Manufacture date</th>
-                  <th scope="col">Expire Date</th>
-                  <th scope="col">Price</th>
-                  <th scope="col">Quality</th>
-                  <th scope="col">Stock</th>
-                  <th scope="col">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {products.map((product) => (
-                  <tr key={product.productid}>
-                    <td>{product.productid}</td>
-                    <td>{product.pname}</td>
-                    <td>{product.manufacturedate}</td>
-                    <td>{product.expirydate}</td>
-                    <td>{product.price}</td>
-                    <td>{product.quantity}</td>
-                    <td>{product.stock}</td>
-                    <td>
-                      <Link
-                        className="btn btn-outline-primary mx-2"
-                        to={`/reportview/${product.productid}`}
-                      >
-                        View
-                      </Link>
-                      <Link
-                        className="btn btn-outline-primary mx-2"
-                        to={`/editproductdetails/${product.productid}`}
-                      >
-                        Edit
-                      </Link>
-                      <button
-                        className="w px-12 py-2 text-sm font-end tracking-wide text-white capitalize transition-colors md:text-center duration-300 transform bg-blue-400 rounded-md hover:bg-blue-400"
-                        onClick={() => deleteProduct(product.productid)}
-                      >
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </center>
+    <div>
+      <h1>Product List</h1>
+      <ul>
+        {products.map((product) => (
+          <li key={product.productid}>
+            <strong>{product.pname}</strong> - ${product.price}
+          </li>
+        ))}
+      </ul>
+    </div>
   );
-}
+};
 
-export default Product;
+export default ProductList;
